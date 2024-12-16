@@ -1,13 +1,44 @@
 <template>
     <div class="search-box">
-        <input />
-        <input type="date" />
-        <input type="date" />
-        <button>검색</button>
+        
+        <input v-model.lazy="keyword" /> 
+        <input type="date" v-model="searchStDate"/>
+        <input type="date" v-model="searchEdDate"/>
+        <!-- <button v-on:click="handlerSearch">검색</button> -->
+        <button @click="handlerSearch">검색</button> 
         <button>신규등록</button>
     </div>
 </template>
-<script></script>
+<script setup>
+import router from '@/router';
+
+const keyword = ref(''); //값이 변경되면 변경된 새로운 창을 띄우게 해주세요 
+const searchStDate = ref('');
+const searchEdDate = ref('');
+
+const handlerSearch = () => {
+    //alert(keyword.value + searchStartDate.value + searchEndDate.value);
+    
+    // 1. url파라미터 쿼리
+    const query = [];
+    !keyword.value || query.push(`searchTitle=${keyword.value}`);
+    !searchStDate.value || query.push(`searchTitle=${searchStDate.value}`);
+    !searchEdDate.value || query.push(`searchTitle=${searchEdDate.value}`);
+    const queryString = query.length > 0 ? `?${query.join('&')}`:'';
+    
+
+    router.push(queryString);
+};
+
+//인자로 받는 함수안에 반응형 객체 (ref 같은거)가 있으면, 객체가 변경될때 마다 해당 함수를 실행시켜 줌..
+//밑에는 ref 같은 거 없음. 그래서 그냥 새로고침 누르면 최초에 한번 실행되는거.
+watchEffect(() => window.location.search && router.push(window.location.pathname, {replace : true}));
+/* watch(keyword,()=> {
+    console.log(keyword.value); //.value 객체말고 그 값만 확인하고 싶을때
+    
+}); //keyword값이 변경되면 이하의 함수가 실행 , 첫번째 인자: 반응형 객체를 넣어줘야함 
+//서버에서 데이터를 받아올때 :반응형 객체가 아닐때는 함수처럼 사용 */
+</script>
 
 <style lang="scss" scoped>
 .search-box {
